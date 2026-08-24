@@ -1,31 +1,31 @@
 # signals/
 
-Esta pasta é o ponto de entrada de evidências para os agentes de sinal deste
-repositório (como o **Radar**). Como esses agentes só têm ferramentas de
-leitura (`Read`, `Grep`, `Glob`), eles não buscam dados sozinhos em
-sistemas externos — você precisa colocar (ou exportar) o material aqui antes
-de pedir a análise.
+This folder is the evidence entry point for the signal agents in this
+repository (like **Radar**). Since these agents only have read tools
+(`Read`, `Grep`, `Glob`), they don't fetch data from external systems on
+their own — you need to put (or export) the material here before
+requesting an analysis.
 
-## Estrutura sugerida
+## Suggested structure
 
 ```
 signals/
-  support/        # exports de tickets de suporte, transcrições de chat
-  sales/          # notas de calls de vendas, objeções, perdas de deal
-  research/       # entrevistas de usuário, testes de usabilidade, surveys
-  analytics/      # relatórios/exports de produto (funis, retenção, uso)
-  market/         # análises de concorrência, reviews públicos, analistas
-  misc/           # qualquer outro sinal que não se encaixe acima
+  support/        # support ticket exports, chat transcripts
+  sales/          # sales call notes, objections, lost deals
+  research/       # user interviews, usability tests, surveys
+  analytics/      # product reports/exports (funnels, retention, usage)
+  market/         # competitive analysis, public reviews, analyst reports
+  misc/           # any other signal that doesn't fit above
 ```
 
-Nenhuma dessas subpastas é obrigatória — crie apenas o que fizer sentido
-para o sinal que você está analisando. Cada arquivo deve ser texto legível
-(`.md`, `.txt`, `.csv`, `.json`) para que o agente consiga ler e cruzar as
-fontes.
+None of these subfolders is mandatory — create only what makes sense for
+the signal you're analyzing. Each file should be readable text (`.md`,
+`.txt`, `.csv`, `.json`) so the agent can read it and cross-reference
+sources.
 
-## Dados sensíveis
+## Sensitive data
 
-Se os arquivos aqui contiverem dados pessoais de clientes (nomes, e-mails,
-transcrições), avalie anonimizar antes de commitar, ou mantenha a pasta (ou
-subpastas específicas) fora do controle de versão via `.gitignore` e trate
-este diretório como um workspace local.
+If files here contain personal customer data (names, emails,
+transcripts), consider anonymizing before committing, or keep the folder
+(or specific subfolders) out of version control via `.gitignore` and treat
+this directory as a local workspace.
