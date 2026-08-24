@@ -1,44 +1,45 @@
 # Compass — Product Decision Intelligence Agent
 
-Arquivo do agente: [`.claude/agents/compass-decision-architect.md`](../../.claude/agents/compass-decision-architect.md)
+Agent file: [`.claude/agents/compass-decision-architect.md`](../../.claude/agents/compass-decision-architect.md)
 
-## Para que serve
+## Purpose
 
-Compass ataca o outro lado do problema que o [Radar](radar-signal-synthesizer.md)
-resolve: depois que os sinais viraram evidência estruturada, alguém ainda
-precisa decidir — e é fácil decidir por instinto, por quem falou mais alto
-na reunião, ou por "dá pra construir, então vamos construir".
+Compass tackles the other side of the problem [Radar](radar-signal-synthesizer.md)
+solves: once signals have become structured evidence, someone still has to
+decide — and it's easy to decide by instinct, by whoever spoke loudest in
+the meeting, or by "we can build it, so let's build it."
 
-Compass existe para forçar rigor nesse momento, sem tirar a decisão das
-mãos de quem é responsável por ela. Ele **não substitui o decisor humano**
-— ele estrutura o problema (objetivo, evidência, restrições, opções,
-trade-offs, incerteza) e entrega uma recomendação explícita com o nível de
-confiança e o que faria essa recomendação mudar, para que a decisão final
-seja tomada com judgment informado, não no escuro.
+Compass exists to force rigor at that moment, without taking the decision
+out of the hands of whoever is accountable for it. It **does not replace
+the human decision-maker** — it structures the problem (objective,
+evidence, constraints, options, trade-offs, uncertainty) and delivers an
+explicit recommendation with a confidence level and what would change that
+recommendation, so the final call is made with informed judgment, not in
+the dark.
 
-## Como funciona
+## How it works
 
-Para cada tarefa, Compass primeiro delimita o problema, identificando:
+For every task, Compass first frames the problem by identifying:
 
-- a decisão a ser tomada;
-- o resultado desejado;
-- a evidência disponível;
-- as restrições relevantes;
-- as suposições em jogo;
-- o que está faltando saber.
+- the decision to be made;
+- the desired outcome;
+- the available evidence;
+- the relevant constraints;
+- the assumptions in play;
+- what's missing.
 
-Em seguida, identifica opções razoáveis e avalia cada uma em:
+It then identifies reasonable options and evaluates each one on:
 
-- valor esperado;
-- evidência a favor;
-- evidência contra;
-- suposições envolvidas;
-- riscos;
-- reversibilidade;
-- custo de oportunidade;
-- incerteza.
+- expected value;
+- evidence supporting it;
+- evidence against it;
+- assumptions involved;
+- risks;
+- reversibility;
+- opportunity cost;
+- uncertainty.
 
-A saída é sempre um **Decision Brief** com estas seções:
+The output is always a **Decision Brief** with these sections:
 
 1. Decision
 2. Context
@@ -52,103 +53,104 @@ A saída é sempre um **Decision Brief** com estas seções:
 10. What could change the recommendation
 11. Next validation step
 
-Regras seguidas à risca (fazem parte do prompt do agente):
+Rules followed strictly (they're part of the agent's prompt):
 
-- Julgamento subjetivo nunca é apresentado como fato.
-- Incerteza nunca é escondida — ela aparece explicitamente no brief.
-- Quando a evidência é fraca, a preferência é por experimentos reversíveis,
-  não por apostas grandes e irreversíveis.
-- Viabilidade técnica ("dá pra construir") nunca é, sozinha, motivo para
-  recomendar construir algo.
+- Subjective judgment is never presented as fact.
+- Uncertainty is never hidden — it shows up explicitly in the brief.
+- When evidence is weak, the preference is for reversible experiments, not
+  big irreversible bets.
+- Technical feasibility ("we can build it") is never, on its own, a reason
+  to recommend building something.
 
-### Ferramentas e limitações
+### Tools and limitations
 
-Assim como o Radar, Compass só tem `Read`, `Grep` e `Glob` — lê arquivos
-locais do repositório, não acessa APIs, não navega na web e não escreve
-arquivos. Isso mantém a recomendação auditável: tudo que aparece no brief
-remete a um arquivo que você pode abrir e conferir, e o agente não tem poder
-de agir sobre a decisão sozinho.
+Like Radar, Compass only has `Read`, `Grep`, and `Glob` — it reads local
+files in the repository, it doesn't call APIs, browse the web, or write
+files. This keeps the recommendation auditable: everything in the brief
+traces back to a file you can open and check, and the agent has no power
+to act on the decision itself.
 
-Na prática, você precisa colocar o contexto da decisão (objetivo,
-restrições, opções, evidência) em arquivos texto antes de pedir a análise —
-veja a convenção sugerida em [`decisions/README.md`](../../decisions/README.md).
+In practice, you need to put the decision's context (objective,
+constraints, options, evidence) into text files before requesting an
+analysis — see the suggested convention in
+[`decisions/README.md`](../../decisions/README.md).
 
-### Relação com o Radar
+### Relationship with Radar
 
-Compass e Radar formam um pipeline natural, embora sejam independentes:
+Compass and Radar form a natural pipeline, although they're independent:
 
 ```
-sinais brutos → [Radar] → Product Signal Brief → [Compass] → Decision Brief
+raw signals → [Radar] → Product Signal Brief → [Compass] → Decision Brief
    signals/                  signals/briefs/         decisions/briefs/
 ```
 
-Você pode apontar o Compass diretamente para um Product Signal Brief já
-gerado pelo Radar (em `signals/briefs/`) como parte da evidência de uma
-decisão — mas isso não é obrigatório; o Compass também funciona com
-qualquer outro material de evidência colocado em `decisions/`.
+You can point Compass directly at a Product Signal Brief already produced
+by Radar (in `signals/briefs/`) as part of a decision's evidence — but
+that's not required; Compass also works with any other evidence material
+placed in `decisions/`.
 
-## Como configurar
+## How to configure it
 
-A configuração vive no front matter de
+The configuration lives in the front matter of
 `.claude/agents/compass-decision-architect.md`:
 
-| Campo         | Valor atual                                  | O que controla |
-|---------------|-----------------------------------------------|----------------|
-| `name`        | `compass-decision-architect`                  | Identificador usado para invocar o agente explicitamente. |
-| `description` | descrição de quando usar                      | Usado pelo Claude Code para decidir quando invocar o agente **proativamente**. |
-| `tools`       | `Read, Grep, Glob`                            | Ferramentas permitidas. Mantenha restrito a leitura — é o que garante que o agente aconselhe, sem agir. |
-| `model`       | `inherit`                                     | Usa o mesmo modelo da sessão principal. Pode ser fixado (ex. `claude-opus-5`) para decisões de maior peso, onde vale a pena mais poder de raciocínio. |
+| Field         | Current value                                  | What it controls |
+|---------------|-------------------------------------------------|-------------------|
+| `name`        | `compass-decision-architect`                     | Identifier used to invoke the agent explicitly. |
+| `description` | description of when to use it                    | Used by Claude Code to decide when to invoke the agent **proactively**. |
+| `tools`       | `Read, Grep, Glob`                               | Allowed tools. Keep this restricted to reading — it's what guarantees the agent advises without acting. |
+| `model`       | `inherit`                                        | Uses the same model as the main session. Can be pinned (e.g. `claude-opus-5`) for higher-stakes decisions, where extra reasoning power is worth it. |
 
-Para ajustar o comportamento, edite o corpo do prompt — por exemplo, para
-adaptar o formato do Decision Brief aos critérios de priorização internos
-da empresa (RICE, ICE, etc.), ou para adicionar um passo de checagem contra
-OKRs específicos. Nenhum passo de build é necessário: o Claude Code carrega
-qualquer `.md` válido em `.claude/agents/` automaticamente.
+To adjust the behavior, edit the body of the prompt — for example, to
+adapt the Decision Brief's format to your company's internal
+prioritization criteria (RICE, ICE, etc.), or to add a check against
+specific OKRs. No build step is needed: Claude Code automatically loads
+any valid `.md` file inside `.claude/agents/`.
 
-## Como rodar no seu ambiente
+## How to run it in your environment
 
-### Pré-requisitos
+### Prerequisites
 
-- [Claude Code](https://code.claude.com) instalado e autenticado.
-- Este repositório clonado localmente (ou uma sessão do Claude Code na
-  web/GitHub Action apontando para ele).
+- [Claude Code](https://code.claude.com) installed and authenticated.
+- This repository cloned locally (or a Claude Code session on the
+  web/GitHub Action pointing at it).
 
-### Passo a passo
+### Step by step
 
-1. Clone e entre no repositório (se ainda não tiver feito):
+1. Clone and enter the repository (if you haven't already):
    ```bash
    git clone https://github.com/albalustro/product-management-operating-layer.git
    cd product-management-operating-layer
    ```
-2. Descreva a decisão em arquivos dentro de `decisions/` — objetivo,
-   restrições, opções e evidência disponível (incluindo, se existir, um
-   Product Signal Brief do Radar). Veja `decisions/README.md`.
-3. Abra o Claude Code na raiz do repositório:
+2. Describe the decision in files inside `decisions/` — objective,
+   constraints, options, and available evidence (including, if it exists,
+   a Product Signal Brief from Radar). See `decisions/README.md`.
+3. Open Claude Code at the root of the repository:
    ```bash
    claude
    ```
-   O agente em `.claude/agents/` é descoberto automaticamente ao iniciar a
-   sessão nessa pasta.
-4. Peça a análise. Duas formas:
-   - **Invocação proativa** — descreva a decisão e deixe o Claude escolher o
-     Compass com base na `description` do agente:
-     > "Preciso decidir se investimos em onboarding self-serve ou em
-     > customer success dedicado no próximo trimestre — avalie as opções
-     > usando o que está em decisions/."
-   - **Invocação explícita** — peça pelo nome quando quiser garantir que é
-     este agente específico:
-     > "Use o agente compass-decision-architect para avaliar as opções em
-     > decisions/options/onboarding.md contra o objetivo em
-     > decisions/context/q3-okrs.md e gerar o Decision Brief."
-5. O agente devolve o Decision Brief em texto. Como ele não escreve
-   arquivos, salvar o brief (ex. em `decisions/briefs/`) para manter
-   histórico da decisão é um passo manual — feito por você ou por outro
-   agente com permissão de escrita.
+   The agent in `.claude/agents/` is discovered automatically when you
+   start a session in that folder.
+4. Ask for the analysis. Two ways:
+   - **Proactive invocation** — describe the decision and let Claude pick
+     Compass based on the agent's `description`:
+     > "I need to decide whether we invest in self-serve onboarding or a
+     > dedicated customer success function next quarter — evaluate the
+     > options using what's in decisions/."
+   - **Explicit invocation** — ask for it by name when you want to make
+     sure it's this specific agent:
+     > "Use the compass-decision-architect agent to evaluate the options
+     > in decisions/options/onboarding.md against the objective in
+     > decisions/context/q3-okrs.md and produce the Decision Brief."
+5. The agent returns the Decision Brief as text. Since it doesn't write
+   files, saving the brief (e.g. into `decisions/briefs/`) to keep a
+   record of the decision is a manual step — done by you or by another
+   agent with write permission.
 
-### Rodando em CI / agente autônomo (opcional)
+### Running it in CI / as an autonomous agent (optional)
 
-Por ser somente leitura, o Compass é seguro para rodar em ambientes
-automatizados (Claude Code on the web, GitHub Actions, Routines agendadas)
-que revisitem decisões periodicamente à medida que nova evidência chega em
-`decisions/` ou `signals/`. Isso não está configurado neste repositório —
-é uma extensão natural, fora do escopo do agente em si.
+Being read-only, Compass is safe to run in automated environments (Claude
+Code on the web, GitHub Actions, scheduled Routines) that revisit
+decisions periodically as new evidence lands in `decisions/` or
+`signals/`. This isn't set up in this repository — it's a natural
+extension, out of scope for the agent itself.
